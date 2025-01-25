@@ -79,7 +79,9 @@ export class SkraaFotoAddressSearch extends HTMLElement {
 
       // On a new address input, update state
       this.addEventListener('gsearch:select', function(event) {
+        console.log('event.detail', event.detail)
         const center = getGSearchCenterPoint(event.detail)
+        console.log('center', center)
         state.refresh(center)
       })
     }

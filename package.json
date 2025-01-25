@@ -5,7 +5,7 @@
   "main": "./public/index.html",
   "type": "module",
   "scripts": {
-    "dev": "export NODE_ENV=development && cp ../web-config.test.js public/config.js || : && node esbuild.js",
+    "dev": "export NODE_ENV=development && cp public/config.js || : && node esbuild.js",
     "build": "export NODE_ENV=production && node esbuild.js",
     "docs": "jsdoc --configure docs/jsdoc-conf.json",
     "test": "npm run test-unit && npm run test-e2e",
