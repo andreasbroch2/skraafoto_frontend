@@ -11,7 +11,6 @@ import { getImageXY, getZ } from '@dataforsyningen/saul'
 import { configuration } from '../../modules/configuration.js'
 import { state } from '../../state/index.js'
 import { toDanish } from '../../modules/i18n.js'
-import { renderParcels } from '../../custom-plugins/plugin-parcel.js'
 import pointerSvg from '../../../public/img/icons/pointer-position.svg'
 import crosshairSvg from '../../../public/img/icons/crosshairs.svg'
 

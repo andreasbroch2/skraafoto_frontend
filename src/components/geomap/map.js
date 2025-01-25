@@ -21,9 +21,6 @@ import { defaults as defaultControls } from 'ol/control'
 import { defaults as defaultInteractions } from 'ol/interaction/defaults'
 import { configuration } from '../../modules/configuration.js'
 import { getViewSyncMapListener } from '../../modules/sync-view'
-import { generateParcelVectorLayer } from '../../custom-plugins/plugin-parcel'
-import { addPointerLayerToMap, getUpdateMapPointerFunction } from '../../custom-plugins/plugin-pointer'
-import { addFootprintLayerToMap, getUpdateMapFootprintFunction } from '../../custom-plugins/plugin-footprint.js'
 import { state, autorun } from '../../state/index.js'
 import pointerSvg from '@dataforsyningen/designsystem/assets/icons/pointer-position.svg'
 
@@ -49,8 +46,6 @@ export class SkraaFotoMap extends HTMLElement {
 
   template = `
     <div class="geographic-map">
-      <skraafoto-compass direction="north"></skraafoto-compass>
-      ${ configuration.ENABLE_GEOLOCATION && this.advanced ? `<skraafoto-geolocation></skraafoto-geolocation>`: '' }
     </div>
   `
 

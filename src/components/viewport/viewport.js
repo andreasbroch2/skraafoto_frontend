@@ -1,16 +1,8 @@
 import OlMap from 'ol/Map.js'
 import { defaults as defaultControls } from 'ol/control'
-import FullScreen from 'ol/control/FullScreen'
 import { defaults as defaultInteractions } from 'ol/interaction'
 import Collection from 'ol/Collection'
 import { image2world } from '@dataforsyningen/saul'
-import svgSprites from '@dataforsyningen/designsystem/assets/icons.svg'
-import { SkraaFotoExposureTool } from '../tools/map-tool-exposure.js'
-import { PlacementPinTool } from '../tools/map-tool-pin.js'
-import { MeasureWidthTool } from '../tools/map-tool-measure-width.js'
-import { MeasureHeightTool } from '../tools/map-tool-measure-height.js'
-import { updateViewportPointer, generatePointerLayer } from '../../custom-plugins/plugin-pointer'
-import { footprintHandler } from '../../custom-plugins/plugin-footprint.js'
 import { configuration } from '../../modules/configuration.js'
 import {
   updateViewport,
@@ -23,23 +15,7 @@ import {
 } from './viewport-mixin.js'
 import { state, reaction, when, autorun } from '../../state/index.js'
 
-customElements.define('skraafoto-exposure-tool', SkraaFotoExposureTool)
-customElements.define('skraafoto-pin-tool', PlacementPinTool)
-customElements.define('skraafoto-measure-width-tool', MeasureWidthTool)
-customElements.define('skraafoto-measure-height-tool', MeasureHeightTool)
 
-// Imports and definitions based on configuration
-if (configuration.ENABLE_PRINT) {
-  import('../tools/map-tool-print.js').then(({ SkraaFotoPrintTool }) => {
-    customElements.define('skraafoto-print-tool', SkraaFotoPrintTool)
-  }) 
-}
-if (configuration.ENABLE_DOWNLOAD) {
-  import('../tools/map-tool-download.js').then(({ SkraaFotoDownloadTool }) => {
-    customElements.define('skraafoto-download-tool', SkraaFotoDownloadTool)
-  })
-}
-  
 /**
  * HTML web component that displays an image using the OpenLayers library.
  * This is the main component of the Skraafoto application.
@@ -61,28 +37,7 @@ export class SkraaFotoViewport extends HTMLElement {
 
     <p class="basic-image-info"></p>
 
-    <nav class="ds-nav-tools sf-viewport-tools" data-theme="light">
-      <div class="ds-button-group">
-        <skraafoto-year-selector data-itemkey="${ this.dataset.itemkey }" data-viewport-id="${this.id}"></skraafoto-year-selector>
-        <hr>
-        <skraafoto-pin-tool></skraafoto-pin-tool>
-        <skraafoto-measure-width-tool></skraafoto-measure-width-tool>
-        <skraafoto-measure-height-tool></skraafoto-measure-height-tool>
-        <skraafoto-info-box id="info-btn"></skraafoto-info-box>
-        ${ configuration.ENABLE_DOWNLOAD ? '<skraafoto-download-tool></skraafoto-download-tool>' : '' }
-        ${ configuration.ENABLE_PRINT ? '<skraafoto-print-tool></skraafoto-print-tool>' : '' }
-      </div>
-    </nav>
-    
-    <skraafoto-date-selector data-itemkey="${ this.dataset.itemkey }"></skraafoto-date-selector>
-
     <div class="viewport-map"></div>
-    ${
-      configuration.ENABLE_COMPASSARROWS ?
-      `<skraafoto-compass-arrows direction="north" data-itemkey="${ this.dataset.itemkey }"></skraafoto-compass-arrows>`:
-      `<skraafoto-compass direction="north"></skraafoto-compass>`
-    }
-    ${ configuration.ENABLE_GEOLOCATION ? `<skraafoto-geolocation></skraafoto-geolocation>`: '' }
   `
 
   constructor() {
@@ -119,22 +74,6 @@ export class SkraaFotoViewport extends HTMLElement {
     interactions.forEach(interaction => {
       this.map.addInteraction(interaction)
     })
-
-    // Add controls
-    this.querySelector('.ol-zoom-out').innerHTML = `<svg><use href="${ svgSprites }#minus" /></svg>`
-    this.querySelector('.ol-zoom-in').innerHTML = `<svg><use href="${ svgSprites }#plus" /></svg>`
-    if (configuration.ENABLE_FULLSCREEN) {
-      this.map.addControl(new FullScreen({
-        className: 'sf-fullscreen-btn',
-        label: '',
-        tipLabel: 'Skift fuldskærmsvisning'
-      }))
-      // Add our custom fullscreen icon to fullscreen button
-      this.querySelector('.sf-fullscreen-btn button').innerHTML = `
-        <svg class="fullscreen-false"><use href="${ svgSprites }#fullscreen" /></svg>
-        <svg class="fullscreen-true"><use href="${ svgSprites }#close" /></svg>
-      `
-    }
   }
 
   /** Initializes the image map */
@@ -148,36 +87,15 @@ export class SkraaFotoViewport extends HTMLElement {
       this.coord_image = newCenters.imageCoord
       this.createMap(item)
       this.setupTools()
-      this.updateNonMap(item)
       this.setupListeners()
     })
   }
 
   setupTools() {
-    this.tool_measure_width = new MeasureWidthTool(this)
-    this.tool_measure_height = new MeasureHeightTool(this)
 
     // Add button to adjust brightness to the DOM
     const button_group = this.querySelector('.ds-button-group')
     const info_button = this.querySelector('#info-btn')
-    button_group.insertBefore(document.createElement('skraafoto-exposure-tool'), info_button)
-  }
-
-  /** Updates various items not directly related to the image map */
-  updateNonMap(item) {
-    this.compass_element.setAttribute('direction', item.properties.direction)
-    this.querySelector('.basic-image-info').innerText = updateTextContent(item)
-    updatePlugins(this, item)
-    this.querySelector('skraafoto-info-box').setItem = item
-    this.querySelector('skraafoto-exposure-tool').setContextTarget = this
-    this.querySelector('skraafoto-pin-tool').setContextTarget = this
-
-    if (configuration.ENABLE_PRINT) {
-      this.querySelector('skraafoto-print-tool').setContextTarget = this  
-    }
-    if (configuration.ENABLE_DOWNLOAD) {
-      this.querySelector('skraafoto-download-tool').setContextTarget = this  
-    }
   }
 
   /** Toggles the visibility of the loading spinner. */
@@ -274,19 +192,8 @@ export class SkraaFotoViewport extends HTMLElement {
         if (!oldData || newData.item.id !== oldData.item.id) {
           this.clearDrawings()
         }
-        // Update viewport
-        updateViewport(newData, oldData, this.map).then(() => {
-          this.updateNonMap(newData.item)
-        })
       }
     )
-
-    if (configuration.ENABLE_POINTER) {
-      this.map.addLayer(generatePointerLayer())
-      this.pointerDisposer = autorun(() => {
-        updateViewportPointer(this, state.pointerPosition, this.dataset.itemkey)
-      })
-    }
 
     this.map.on('pointermove', (event) => {
 
@@ -296,8 +203,6 @@ export class SkraaFotoViewport extends HTMLElement {
         state.setPointerPosition = {point: coord, itemkey: this.dataset.itemkey}
       }
       
-      // When user changes viewport orientation, display image footprint on the map
-      footprintHandler(event, state.items[this.dataset.itemkey])
     })
 
     // Viewport sync trigger

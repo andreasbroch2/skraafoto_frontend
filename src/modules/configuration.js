@@ -31,16 +31,16 @@ let configuration = {
   DEFAULT_COLLECTION: null, // Set a default collection to initiate from. Example `skraafotos2021`
   DEFAULT_WORLD_COORDINATE: getRandomPosition(),
 
-  ENABLE_CUSTOM_TOKEN: false, // Enables using a custom token from URL param or localstorage to access STAC API
-  ENABLE_PARCEL: false, // Enables displaying parcels on all viewports
-  ENABLE_PARCEL_WFS: false, // Enables fetching Jordstykke data from WFS service
+  ENABLE_CUSTOM_TOKEN: true, // Enables using a custom token from URL param or localstorage to access STAC API
+  ENABLE_PARCEL: true, // Enables displaying parcels on all viewports
+  ENABLE_PARCEL_WFS: true, // Enables fetching Jordstykke data from WFS service
   ENABLE_POINTER: true, // Enables displaying the cursor's position as a yellow dot on the other viewports
-  ENABLE_SMALL_FONT: false, // Enables a small font on image-date
-  ENABLE_FULLSCREEN: false, // Enables Fullscreen button
+  ENABLE_SMALL_FONT: true, // Enables a small font on image-date
+  ENABLE_FULLSCREEN: true, // Enables Fullscreen button
   ENABLE_COMPASSARROWS: true, // Enables compass buttons
-  ENABLE_CROSSHAIR_ICON: false,
-  ENABLE_SKATLOGO: false, // Switches logo to Vurderingsstyrelsen instead of SDFI
-  ENABLE_ALERT: false, // Shows a modal with custom content
+  ENABLE_CROSSHAIR_ICON: true,
+  ENABLE_SKATLOGO: true, // Switches logo to Vurderingsstyrelsen instead of SDFI
+  ENABLE_ALERT: true, // Shows a modal with custom content
   
   ENABLE_GEOLOCATION: true, // Display Geolocation button to track current location
   ENABLE_DOWNLOAD: true, // Enable image download (download entire tiff image)
@@ -54,7 +54,6 @@ let configuration = {
   MAX_ZOOM: 10, // the maximum zoom for skraafotos.
   MIN_ZOOM: 1, // the minimum zoom for skraafotos.
 
-  SITEIMPROVE_SCRIPT: '', // Enables web statistics. Values: `false` or string with SiteImprove Javascript URL
 
   COLOR_SETTINGS:
     {

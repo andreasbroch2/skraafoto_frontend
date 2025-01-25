@@ -2,7 +2,6 @@ import { queryItems, queryItem } from '../modules/api.js'
 import { configuration } from '../modules/configuration.js'
 import { removeUnusedParams } from '../modules/url-sanitize.js'
 import { getZ } from '@dataforsyningen/saul'
-import { fetchParcels } from '../custom-plugins/plugin-parcel.js'
 
 export async function syncFromURL(urlParams) {
 
@@ -50,10 +49,6 @@ export async function syncFromURL(urlParams) {
     newState.items.item2 = newState.items.item1
   }
 
-  if (urlParams.has('parcels')) {
-    const parcels = await fetchParcels(urlParams.get('parcels'))
-    newState.parcels = parcels
-  }
 
   if (!newState.items.nadir) {
      const nadirItem = await queryItems(newState.marker.position, 'nadir', newState.collection)

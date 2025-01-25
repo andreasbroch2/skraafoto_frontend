@@ -11,7 +11,6 @@ customElements.define('g-search', GSearchUI)
  * Web component that enables users to search for an address
  */
 export class SkraaFotoAddressSearch extends HTMLElement {
-
   // public properties
   coorTranslator = createTranslator()
   search_element
